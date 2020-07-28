@@ -1,2 +1,7 @@
-*.class
-*.log
+target/
+**/*.rs.bk
+Cargo.lock
+
+metastore_db/
+spark-warehouse/
+derby.log
