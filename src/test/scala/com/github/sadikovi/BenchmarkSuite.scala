@@ -44,8 +44,4 @@ class BenchmarkSuite extends UnitTestSuite {
       }
     }
   }
-
-  bench("sort 100000 values") {
-    (0 until 100000).sortWith(_ > _)
-  }
 }
