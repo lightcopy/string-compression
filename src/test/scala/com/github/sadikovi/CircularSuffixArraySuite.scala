@@ -26,7 +26,7 @@ class CircularSuffixArraySuite extends BenchmarkSuite {
     "tainer killed by YARN for exceeding memory limits. 8.1 GB of 8 GB physical memory used. Consider boo" +
     "sting spark.yarn.executor.memoryOverhead. Caused by: org.apache.hadoop.fs.FileAlreadyExistsException" +
     ": /user/hive/warehouse/tmp_supply_feb1/.spark-staging-blah-blah-blah/dt=2019-02-17/part-00200-blah-b"
-  ) * 2
+  ) * 10
 
   // bench("benchmark", 100) {
   //   new CircularSuffixArray(input)
