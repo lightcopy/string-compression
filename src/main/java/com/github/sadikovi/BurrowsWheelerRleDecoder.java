@@ -21,15 +21,15 @@ public class BurrowsWheelerRleDecoder {
     int first = readInt(in);
     int len = readInt(in);
 
-    if (len < MIN_LEN) {
-      throw new IllegalArgumentException("Length " + len + " < MIN_LEN (" + MIN_LEN + ")");
+    if (len < MIN_LEN && len > MAX_LEN) {
+      throw new IllegalArgumentException("Invalid length " + len);
     }
-    if (len > MAX_LEN) {
-      throw new IllegalArgumentException("Length " + len + " > MAX_LEN (" + MAX_LEN + ")");
+    if (first < 0 || first >= len) {
+      throw new IllegalArgumentException("Invalid index " + first);
     }
-    if (first < 0 || first >= len) throw new IllegalArgumentException("Invalid index " + first);
 
     byte[] value = new byte[len];
+
     rleDecode(len, value, in);
 
     Index[] r = new Index[256]; // ASCII range

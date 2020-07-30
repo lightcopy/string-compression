@@ -76,39 +76,57 @@ class BurrowsWheelerRleEncoderSuite extends UnitTestSuite {
     roundtrip(input7)
   }
 
-  // bench("encode", 100) {
-  //   val bw = new BurrowsWheelerRleEncoder()
-  //   val out = new ByteArrayOutputStream()
-  //   bw.encode(input2.getBytes, out)
-  //   out.close()
-  // }
-  //
-  // bench("decode", 100) {
-  //   val bw = new BurrowsWheelerRleEncoder()
-  //   val out = new ByteArrayOutputStream()
-  //   bw.encode(input2.getBytes, out)
-  //   out.close()
-  //   val in = new ByteArrayInputStream(out.toByteArray)
-  //   bw.decode(in)
-  //   in.close()
-  // }
+  test("reuse encoder and decoder") {
+    val inputs = Seq(input1, input2, input3, input4, input5, input6, input7)
 
-  // test("benchmark") {
-  //   val out = new ByteArrayOutputStream()
-  //   val bw = new BurrowsWheelerRleEncoder()
-  //
-  //   val s = input2
-  //
-  //   bw.encode(s.getBytes, out)
-  //
-  //   // println("ORG: " + java.util.Arrays.toString(pad(s.getBytes)))
-  //   // println("CMP: " + java.util.Arrays.toString(out.toByteArray))
-  //   println("UNQ: " + unique(s.getBytes))
-  //   println("ORG: " + pad(s.getBytes).length)
-  //   println("CMP: " + out.toByteArray.length)
-  //   println("BST: " + rle(s.getBytes).length)
-  //
-  // }
+    val encoder = new BurrowsWheelerRleEncoder()
+    val decoder = new BurrowsWheelerRleDecoder()
+
+    val out = new ByteArrayOutputStream()
+
+    for (input <- inputs) {
+      encoder.encode(input.getBytes, out)
+    }
+
+    val in = new ByteArrayInputStream(out.toByteArray)
+
+    var res: Seq[String] = Nil
+    while (in.available() > 0) {
+      res = res :+ new String(decoder.decode(in))
+    }
+
+    assert(res === inputs)
+  }
+
+  ignore("encode benchmark") {
+    val encoder = new BurrowsWheelerRleEncoder()
+
+    // val bytes = scala.io.Source.fromFile("plan.json").getLines.mkString.getBytes
+    val bytes = input7.getBytes
+
+    bench(100) {
+      val out = new ByteArrayOutputStream()
+      encoder.encode(bytes, out)
+      out.toByteArray
+    }
+  }
+
+  ignore("decode benchmark") {
+    val out = new ByteArrayOutputStream()
+    val encoder = new BurrowsWheelerRleEncoder()
+
+    val bytes = scala.io.Source.fromFile("plan.json").getLines.mkString.getBytes
+
+    encoder.encode(bytes, out)
+
+    val input = out.toByteArray
+    val decoder = new BurrowsWheelerRleDecoder()
+
+    bench(100) {
+      val in = new ByteArrayInputStream(input)
+      decoder.decode(in)
+    }
+  }
 
   def unique(arr: Array[Byte]): Int = {
     val r = new Array[Boolean](256)
