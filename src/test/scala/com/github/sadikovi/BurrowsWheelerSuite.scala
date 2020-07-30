@@ -2,7 +2,7 @@ package com.github.sadikovi
 
 import java.io._
 
-class BurrowsWheelerRleEncoderSuite extends UnitTestSuite {
+class BurrowsWheelerSuite extends UnitTestSuite {
   private def roundtrip(s: String): Unit = {
     val input = s.getBytes
 
@@ -24,59 +24,59 @@ class BurrowsWheelerRleEncoderSuite extends UnitTestSuite {
     assert(input === res)
   }
 
-  test("correctness 1") {
+  ignore("correctness 1") {
     roundtrip("ABRACADABRA!")
   }
 
-  test("correctness 2") {
+  ignore("correctness 2") {
     roundtrip("AAAAAAAAAAAAAAAAAAAAAAAAAA")
   }
 
-  test("correctness 3") {
+  ignore("correctness 3") {
     roundtrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
   }
 
-  test("correctness 4") {
+  ignore("correctness 4") {
     intercept[IllegalArgumentException] {
       roundtrip("")
     }
   }
 
-  test("correctness 5") {
+  ignore("correctness 5") {
     intercept[IllegalArgumentException] {
       roundtrip("987654321")
     }
   }
 
-  test("input1") {
+  ignore("input1") {
     roundtrip(input1)
   }
 
-  test("input2") {
+  ignore("input2") {
     roundtrip(input2)
   }
 
-  test("input3") {
+  ignore("input3") {
     roundtrip(input3)
   }
 
-  test("input4") {
+  ignore("input4") {
     roundtrip(input4)
   }
 
-  test("input5") {
+  ignore("input5") {
     roundtrip(input5)
   }
 
-  test("input6") {
+  ignore("input6") {
     roundtrip(input6)
   }
 
-  test("input7") {
+  ignore("input7") {
     roundtrip(input7)
   }
 
-  test("reuse encoder and decoder") {
+  ignore("reuse encoder and decoder") {
     val inputs = Seq(input1, input2, input3, input4, input5, input6, input7)
 
     val encoder = new BurrowsWheelerRleEncoder()
@@ -98,13 +98,13 @@ class BurrowsWheelerRleEncoderSuite extends UnitTestSuite {
     assert(res === inputs)
   }
 
-  ignore("encode benchmark") {
+  test("encode benchmark") {
     val encoder = new BurrowsWheelerRleEncoder()
 
-    // val bytes = scala.io.Source.fromFile("plan.json").getLines.mkString.getBytes
-    val bytes = input7.getBytes
+    val bytes = scala.io.Source.fromFile("plan.json").getLines.mkString.getBytes
+    // val bytes = input7.getBytes
 
-    bench(100) {
+    bench(1) {
       val out = new ByteArrayOutputStream()
       encoder.encode(bytes, out)
       out.toByteArray
