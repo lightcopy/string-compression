@@ -2,51 +2,78 @@ package com.github.sadikovi
 
 import java.io._
 
-class BurrowsWheelerRleEncoderSuite extends BenchmarkSuite {
-  test("small test") {
-    val bw = new BurrowsWheelerRleEncoder()
+class BurrowsWheelerRleEncoderSuite extends UnitTestSuite {
+  private def roundtrip(s: String): Unit = {
+    val input = s.getBytes
+
     val out = new ByteArrayOutputStream()
+    val encoder = new BurrowsWheelerRleEncoder()
 
-    // val s = "ABRACADABRA!"
-    // val s = "ABCDAASDFWESDF"
-    val s = scala.io.Source.fromFile("plan.json").getLines.mkString
+    encoder.encode(input, out)
 
-    bw.encode(s.getBytes, out)
-
-    // println("ORG: " + java.util.Arrays.toString(pad(s.getBytes)))
-    // println("CMP: " + java.util.Arrays.toString(out.toByteArray))
     println("UNQ: " + unique(s.getBytes))
     println("ORG: " + pad(s.getBytes).length)
     println("CMP: " + out.toByteArray.length)
     println("BST: " + rle(s.getBytes).length)
 
-    // var i = 0
-    // val b = out.toByteArray
-    // println("ENC:")
-    // while (i < b.length) {
-    //   if (b(i) < 0) {
-    //     val cnt = b(i) & 0x7f
-    //     i += 1
-    //     print(b(i).toChar)
-    //     print(cnt)
-    //   } else {
-    //     print(b(i).toChar)
-    //   }
-    //   i += 1
-    // }
-    // println()
-
     val in = new ByteArrayInputStream(out.toByteArray)
-    val res = bw.decode(in)
-    // println("ORG: " + java.util.Arrays.toString(s.getBytes))
-    // println("RES: " + java.util.Arrays.toString(res));
+    val decoder = new BurrowsWheelerRleDecoder()
+    val res = decoder.decode(in)
 
-    assert(s.getBytes.length === res.length)
-    assert(s.getBytes === res)
+    assert(input.length === res.length)
+    assert(input === res)
+  }
 
-    // new CircularSuffixArray("ABCDAASDFWESDF")
-    // new CircularSuffixArray("ABRACADABRA!")
-    // new CircularSuffixArray(input)
+  test("correctness 1") {
+    roundtrip("ABRACADABRA!")
+  }
+
+  test("correctness 2") {
+    roundtrip("AAAAAAAAAAAAAAAAAAAAAAAAAA")
+  }
+
+  test("correctness 3") {
+    roundtrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  }
+
+  test("correctness 4") {
+    intercept[IllegalArgumentException] {
+      roundtrip("")
+    }
+  }
+
+  test("correctness 5") {
+    intercept[IllegalArgumentException] {
+      roundtrip("987654321")
+    }
+  }
+
+  test("input1") {
+    roundtrip(input1)
+  }
+
+  test("input2") {
+    roundtrip(input2)
+  }
+
+  test("input3") {
+    roundtrip(input3)
+  }
+
+  test("input4") {
+    roundtrip(input4)
+  }
+
+  test("input5") {
+    roundtrip(input5)
+  }
+
+  test("input6") {
+    roundtrip(input6)
+  }
+
+  test("input7") {
+    roundtrip(input7)
   }
 
   // bench("encode", 100) {
@@ -66,8 +93,22 @@ class BurrowsWheelerRleEncoderSuite extends BenchmarkSuite {
   //   in.close()
   // }
 
-  // [0, 0, 0, 0, 65, 66, 82, 65, 67, 65, 68, 65, 66, 82, 65,   33]
-  // [3, 0, 0, 0, 12, 0,  0,  0,  65, 82, 68, 33, 82, 67, -124, 65, 66, 66]
+  // test("benchmark") {
+  //   val out = new ByteArrayOutputStream()
+  //   val bw = new BurrowsWheelerRleEncoder()
+  //
+  //   val s = input2
+  //
+  //   bw.encode(s.getBytes, out)
+  //
+  //   // println("ORG: " + java.util.Arrays.toString(pad(s.getBytes)))
+  //   // println("CMP: " + java.util.Arrays.toString(out.toByteArray))
+  //   println("UNQ: " + unique(s.getBytes))
+  //   println("ORG: " + pad(s.getBytes).length)
+  //   println("CMP: " + out.toByteArray.length)
+  //   println("BST: " + rle(s.getBytes).length)
+  //
+  // }
 
   def unique(arr: Array[Byte]): Int = {
     val r = new Array[Boolean](256)

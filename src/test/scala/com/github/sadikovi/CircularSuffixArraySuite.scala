@@ -1,10 +1,9 @@
 package com.github.sadikovi
 
-class CircularSuffixArraySuite extends BenchmarkSuite {
+class CircularSuffixArraySuite extends UnitTestSuite {
   test("small test") {
     // new CircularSuffixArray("ABCDAASDFWESDF")
     new CircularSuffixArray("ABRACADABRA!")
-    // new CircularSuffixArray(input)
   }
 
   // Mergesort:
@@ -28,7 +27,9 @@ class CircularSuffixArraySuite extends BenchmarkSuite {
     ": /user/hive/warehouse/tmp_supply_feb1/.spark-staging-blah-blah-blah/dt=2019-02-17/part-00200-blah-b"
   ) * 10
 
-  // bench("benchmark", 100) {
-  //   new CircularSuffixArray(input)
+  // test("benchmark") {
+  //   bench(100) {
+  //     new CircularSuffixArray(input)
+  //   }
   // }
 }

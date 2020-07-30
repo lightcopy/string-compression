@@ -1,23 +1,21 @@
 package com.github.sadikovi;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
+/** Only supports ASCII characters for now */
 public class BurrowsWheelerRleEncoder {
   // cannot have more than MAX_LEN characters in the string
-  private static final int MIN_LEN = 10;
-  private static final int MAX_LEN = 200000;
+  public static final int MIN_LEN = 10;
+  public static final int MAX_LEN = 1000000;
 
   private final int[] index;
   private final Random rand;
 
   BurrowsWheelerRleEncoder() {
-    this.index = new int[MAX_LEN];
     this.rand = new Random();
+    this.index = new int[MAX_LEN]; // reused in encoding
   }
 
   /** Returns true if we can process the string of length "len" */
@@ -44,6 +42,7 @@ public class BurrowsWheelerRleEncoder {
 
     int idx = 0;
     while (idx < len && index[idx] != 0) idx++;
+
     writeInt(out, idx);
 
     writeInt(out, len);
@@ -51,63 +50,7 @@ public class BurrowsWheelerRleEncoder {
     rleEncode(index, len, value, out);
   }
 
-  private static class Index {
-    List<Integer> indices = new ArrayList<Integer>();
-  }
-
-  public byte[] decode(InputStream in) throws IOException {
-    int first = readInt(in);
-    int len = readInt(in);
-
-    if (len < MIN_LEN) {
-      throw new IllegalArgumentException("Length " + len + " < MIN_LEN (" + MIN_LEN + ")");
-    }
-    if (len > MAX_LEN) {
-      throw new IllegalArgumentException("Length " + len + " > MAX_LEN (" + MAX_LEN + ")");
-    }
-    if (first < 0 || first >= len) throw new IllegalArgumentException("Invalid index " + first);
-
-    byte[] value = new byte[len];
-    rleDecode(len, value, in);
-
-    Index[] r = new Index[256]; // ASCII range
-
-    for (int i = 0; i < len; i++) {
-      if (r[value[i]] == null) {
-        r[value[i]] = new Index();
-      }
-      r[value[i]].indices.add(i);
-    }
-
-    byte[] sorted = new byte[len];
-    int k = 0;
-    for (int i = 0; i < r.length; i++) {
-      int size = r[i] == null ? 0 : r[i].indices.size();
-      while (size > 0) {
-        sorted[k++] = (byte) i;
-        size--;
-      }
-    }
-
-    int[] next = new int[len];
-    int kn = 0;
-    for (int i = 0; i < r.length; i++) {
-      int size = r[i] == null ? 0 : r[i].indices.size();
-      for (int j = 0; j < size; j++) {
-        next[kn++] = r[i].indices.get(j);
-      }
-    }
-
-    int tmp = first, iter = 0;
-    while (iter < len) {
-      value[iter] = sorted[tmp];
-      tmp = next[tmp];
-      iter++;
-    }
-
-    return value;
-  }
-
+  /** Shuffles array for [0, n), n is the length of the slice to shuffle */
   private void shuffle(int[] a, int n) {
     for (int i = 0; i < n; i++) {
       int r = i + rand.nextInt(n - i); // between i and n-1
@@ -117,6 +60,11 @@ public class BurrowsWheelerRleEncoder {
     }
   }
 
+  /**
+   * 3-way quicksort augmented for Burrows-Wheeler.
+   * I found that 3-way string quicksort does not quite work here for long strings,
+   * and this algorithm is good enough.
+   */
   private void sort(int[] arr, int start, int end, byte[] value, int len) {
     if (start >= end) return;
 
@@ -135,6 +83,11 @@ public class BurrowsWheelerRleEncoder {
     sort(arr, gt + 1, end, value, len);
   }
 
+  /**
+   * Comparison function.
+   * Here we compre rotations for Burrows-Wheeler.
+   * I am not sure if there is more efficient implementation.
+   */
   private int compare(byte[] value, int len, int a, int b) {
     for (int i = 0; i < len; i++) {
       byte ca = value[(a + i) % len];
@@ -145,6 +98,7 @@ public class BurrowsWheelerRleEncoder {
     return 0;
   }
 
+  /** Swaps arr[a] and arr[b] */
   private void exchange(int[] arr, int a, int b) {
     int tmp = arr[a];
     arr[a] = arr[b];
@@ -157,14 +111,6 @@ public class BurrowsWheelerRleEncoder {
     out.write(0xff & (value >> 8));
     out.write(0xff & (value >> 16));
     out.write(0xff & (value >> 24));
-  }
-
-  /** Reads integer as 32-bit little endian value */
-  private int readInt(InputStream in) throws IOException {
-    return in.read() & 0xff |
-      (in.read() & 0xff) << 8 |
-      (in.read() & 0xff) << 16 |
-      (in.read() & 0xff) << 24;
   }
 
   /**
@@ -204,23 +150,6 @@ public class BurrowsWheelerRleEncoder {
       case 2: out.write(curr); out.write(curr); break;
       // case 3: out.write(curr); out.write(curr); out.write(curr); break;
       default: out.write(0x80 | cnt); out.write(curr); break;
-    }
-  }
-
-  private void rleDecode(int len, byte[] value, InputStream in) throws IOException {
-    int i = 0;
-    while (i < len) {
-      int b = in.read();
-      if ((b & 0x80) == 0) {
-        value[i++] = (byte) b;
-      } else {
-        int v = in.read();
-        int cnt = b & 0x7F;
-        while (cnt > 0) {
-          value[i++] = (byte) v;
-          cnt--;
-        }
-      }
     }
   }
 }
