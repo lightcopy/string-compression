@@ -10,7 +10,7 @@ import java.util.Random;
 public class BurrowsWheelerRleEncoder {
   // cannot have more than MAX_LEN characters in the string
   private static final int MIN_LEN = 10;
-  private static final int MAX_LEN = 10000;
+  private static final int MAX_LEN = 200000;
 
   private final int[] index;
   private final Random rand;
@@ -174,14 +174,14 @@ public class BurrowsWheelerRleEncoder {
    * - [length byte with MSB set to 1][char byte]
    */
   private void rleEncode(int[] index, int len, byte[] value, OutputStream out) throws IOException {
-    java.io.ByteArrayOutputStream tmp = new java.io.ByteArrayOutputStream();
-    byte curr = -1;
-    byte cnt = 0;
+    byte curr = -1, cnt = 0;
+
     for (int i = 0; i < len; i++) {
       int ni = (index[i] + len - 1) % len; // new index for byte value
       byte v = value[ni];
-      tmp.write(v);
+
       if (v < 0) throw new IllegalArgumentException("Cannot process byte value " + v);
+
       if (cnt < 127 && curr == v) {
         cnt++;
       } else {
@@ -190,7 +190,7 @@ public class BurrowsWheelerRleEncoder {
           case 0: break;
           case 1: out.write(curr); break;
           case 2: out.write(curr); out.write(curr); break;
-          case 3: out.write(curr); out.write(curr); out.write(curr); break;
+          // case 3: out.write(curr); out.write(curr); out.write(curr); break;
           default: out.write(0x80 | cnt); out.write(curr); break;
         }
         curr = v;
@@ -202,11 +202,9 @@ public class BurrowsWheelerRleEncoder {
       case 0: break;
       case 1: out.write(curr); break;
       case 2: out.write(curr); out.write(curr); break;
-      case 3: out.write(curr); out.write(curr); out.write(curr); break;
+      // case 3: out.write(curr); out.write(curr); out.write(curr); break;
       default: out.write(0x80 | cnt); out.write(curr); break;
     }
-
-    System.out.println(new String(tmp.toByteArray()));
   }
 
   private void rleDecode(int len, byte[] value, InputStream in) throws IOException {
