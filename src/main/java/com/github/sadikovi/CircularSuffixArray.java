@@ -24,19 +24,19 @@ public class CircularSuffixArray {
     sort(this.index, 0, len - 1, s, len);
 
     // System.out.println("Original suffixes");
-    // for (int i = 0; i < n; i++) {
+    // for (int i = 0; i < len; i++) {
     //   char[] r = rotate(s, i);
     //   System.out.println(i + ":\t" + java.util.Arrays.toString(r));
     // }
     // System.out.println("Sorted suffixes");
-    // for (int i = 0; i < n; i++) {
+    // for (int i = 0; i < len; i++) {
     //   char[] r = rotate(s, index[i]);
     //   System.out.println(i + ":\t" + java.util.Arrays.toString(r));
     // }
     // System.out.println(java.util.Arrays.toString(index));
-    // for (int i = 0; i < n; i++) {
+    // for (int i = 0; i < len; i++) {
     //   char[] r = rotate(s, index[i]);
-    //   System.out.print(r[n - 1]);
+    //   System.out.print(r[len - 1]);
     // }
     // System.out.println();
   }
