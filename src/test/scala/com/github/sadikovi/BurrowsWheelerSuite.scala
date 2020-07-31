@@ -24,59 +24,59 @@ class BurrowsWheelerSuite extends UnitTestSuite {
     assert(input === res)
   }
 
-  ignore("correctness 1") {
+  test("correctness 1") {
     roundtrip("ABRACADABRA!")
   }
 
-  ignore("correctness 2") {
+  test("correctness 2") {
     roundtrip("AAAAAAAAAAAAAAAAAAAAAAAAAA")
   }
 
-  ignore("correctness 3") {
+  test("correctness 3") {
     roundtrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
   }
 
-  ignore("correctness 4") {
+  test("correctness 4") {
     intercept[IllegalArgumentException] {
       roundtrip("")
     }
   }
 
-  ignore("correctness 5") {
+  test("correctness 5") {
     intercept[IllegalArgumentException] {
       roundtrip("987654321")
     }
   }
 
-  ignore("input1") {
+  test("input1") {
     roundtrip(input1)
   }
 
-  ignore("input2") {
+  test("input2") {
     roundtrip(input2)
   }
 
-  ignore("input3") {
+  test("input3") {
     roundtrip(input3)
   }
 
-  ignore("input4") {
+  test("input4") {
     roundtrip(input4)
   }
 
-  ignore("input5") {
+  test("input5") {
     roundtrip(input5)
   }
 
-  ignore("input6") {
+  test("input6") {
     roundtrip(input6)
   }
 
-  ignore("input7") {
+  test("input7") {
     roundtrip(input7)
   }
 
-  ignore("reuse encoder and decoder") {
+  test("reuse encoder and decoder") {
     val inputs = Seq(input1, input2, input3, input4, input5, input6, input7)
 
     val encoder = new BurrowsWheelerRleEncoder()
@@ -111,7 +111,7 @@ class BurrowsWheelerSuite extends UnitTestSuite {
     }
   }
 
-  ignore("decode benchmark") {
+  test("decode benchmark") {
     val out = new ByteArrayOutputStream()
     val encoder = new BurrowsWheelerRleEncoder()
 
