@@ -27,7 +27,7 @@ abstract class UnitTestSuite
   }
 
   /** Run the benchmark */
-  def bench(iterations: Int = 10)(func: => Unit): Unit = {
+  def bench(name: String, iterations: Int = 10)(func: => Unit): Unit = {
     if (iterations > 0) {
       val measurements = (0 until iterations).map { i =>
         time(func)
@@ -38,7 +38,7 @@ abstract class UnitTestSuite
       val median = sortedValues(sortedValues.size / 2)
       val max = sortedValues.last
 
-      println(s"""Benchmark:
+      println(s"""Benchmark '$name':
         | Min (ms): $min
         | Med (ms): $median
         | Max (ms): $max

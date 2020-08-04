@@ -27,9 +27,9 @@ class CircularSuffixArraySuite extends UnitTestSuite {
     ": /user/hive/warehouse/tmp_supply_feb1/.spark-staging-blah-blah-blah/dt=2019-02-17/part-00200-blah-b"
   ) * 10
 
-  // test("benchmark") {
-  //   bench(100) {
-  //     new CircularSuffixArray(input)
-  //   }
-  // }
+  test("benchmark") {
+    bench("CircularSuffixArray", 100) {
+      new CircularSuffixArray(input)
+    }
+  }
 }
